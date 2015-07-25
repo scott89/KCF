@@ -44,13 +44,7 @@ function [img_files, pos, target_sz, ground_truth, video_path] = load_video_info
 	target_sz = [ground_truth(1,4), ground_truth(1,3)];
 	pos = [ground_truth(1,2), ground_truth(1,1)] + floor(target_sz/2);
 	
-	if size(ground_truth,1) == 1,
-		%we have ground truth for the first frame only (initial position)
-		ground_truth = [];
-	else
-		%store positions instead of boxes
-		ground_truth = ground_truth(:,[2,1]) + ground_truth(:,[4,3]) / 2;
-	end
+
 	
 	
 	%from now on, work in the subfolder where all the images are
@@ -58,7 +52,7 @@ function [img_files, pos, target_sz, ground_truth, video_path] = load_video_info
 	
 	%for these sequences, we must limit ourselves to a range of frames.
 	%for all others, we just load all png/jpg files in the folder.
-	frames = {'David', 300, 770;
+	frames = {'David', 300, 465; %770
 			  'Football1', 1, 74;
 			  'Freeman3', 1, 460;
 			  'Freeman4', 1, 283};
@@ -73,7 +67,12 @@ function [img_files, pos, target_sz, ground_truth, video_path] = load_video_info
 			assert(~isempty(img_files), 'No image files to load.')
 		end
 		img_files = sort({img_files.name});
-	else
+        target_sz = [ground_truth(1,4), ground_truth(1,3)];
+	    pos = [ground_truth(1,2), ground_truth(1,1)] + floor(target_sz/2);
+    else
+        
+        target_sz = [ground_truth(frames{idx, 2},4), ground_truth(frames{idx, 2},3)];
+        pos = [ground_truth(frames{idx, 2},2), ground_truth(frames{idx, 2},1)] + floor(target_sz/2);
 		%list specified frames. try png first, then jpg.
 		if exist(sprintf('%s%04i.png', video_path, frames{idx,2}), 'file'),
 			img_files = num2str((frames{idx,2} : frames{idx,3})', '%04i.png');
@@ -86,6 +85,14 @@ function [img_files, pos, target_sz, ground_truth, video_path] = load_video_info
 		end
 		
 		img_files = cellstr(img_files);
+    end
+    
+    	if size(ground_truth,1) == 1,
+		%we have ground truth for the first frame only (initial position)
+		ground_truth = [];
+	else
+		%store positions instead of boxes
+		ground_truth = ground_truth(:,[2,1]) + ground_truth(:,[4,3]) / 2;
 	end
 	
 end

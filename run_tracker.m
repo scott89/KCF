@@ -59,6 +59,8 @@ function [precision, fps] = run_tracker(video, kernel_type, feature_type, show_v
 	features.hog = false;
 	
 	padding = 1.5;  %extra area surrounding the target
+%     padding = 2;  %extra area surrounding the target
+
 	lambda = 1e-4;  %regularization
 	output_sigma_factor = 0.1;  %spatial bandwidth (proportional to target)
 	
@@ -95,7 +97,7 @@ function [precision, fps] = run_tracker(video, kernel_type, feature_type, show_v
 		kernel.poly_b = 9;
 		
 		features.deep = true;
-		cell_size = 8;
+		cell_size = 4;
         init_vgg;
 		
 	otherwise
@@ -202,7 +204,36 @@ function [precision, fps] = run_tracker(video, kernel_type, feature_type, show_v
 			padding, kernel, lambda, output_sigma_factor, interp_factor, ...
 			cell_size, features, show_visualization);
 		
-		
+        clear results
+        results{1}.type = 'rect';
+        x = positions(:,2);
+        y = positions(:,1);
+        w = target_sz(2) * ones(size(x, 1), 1);
+        h = target_sz(1) * ones(size(x, 1), 1);
+        results{1}.res = [x-w/2, y-h/2, w, h];
+        
+        results{1}.startFame = 1;
+        results{1}.annoBegin = 1;
+        results{1}.len = size(x, 1);
+        
+        frames = {'David', 300, 465;%770
+            'Football1', 1, 74;
+            'Freeman3', 1, 460;
+            'Freeman4', 1, 283};
+        
+        idx = find(strcmpi(video, frames(:,1)));
+        
+        if ~isempty(idx),
+            results{1}.startFame = frames{idx, 2};
+            results{1}.len = frames{idx, 3} - frames{idx, 2}; +1;
+        end
+        res_path = ['KCF_results_' feature_type '/'];
+        if ~isdir(res_path)
+            mkdir(res_path);
+        end
+        save([res_path lower(video) '_kcf_' feature_type '.mat'], 'results');
+        
+        
 		%calculate and show precision plot, as well as frames-per-second
 		precisions = precision_plot(positions, ground_truth, video, show_plots);
 		fps = numel(img_files) / time;
@@ -212,7 +243,8 @@ function [precision, fps] = run_tracker(video, kernel_type, feature_type, show_v
 		if nargout > 0,
 			%return precisions at a 20 pixels threshold
 			precision = precisions(20);
-		end
+        end
+        
 
 	end
 end

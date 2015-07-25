@@ -35,8 +35,10 @@ function x = get_features(im, features, cell_size, cos_window)
     
     if isfield(features, 'deep') && features.deep
         x = impreprocess(single(im));
-        caffe('reshape_input', 'solver', [0, 1, size(x, 3), size(x, 2), size(x, 1)]);
-        x = caffe('forward', {x});
+%         caffe('reshape_input', 'solver', [0, 1, size(x, 3), size(x, 2), size(x, 1)]);
+%         x = caffe('forward', {x});
+        caffe('set_input_dim', 'DNNL', [0, 1, size(x, 3), size(x, 2), size(x, 1)]);
+        x = caffe('forward', 'DNNL', {x});
         x = permute(x{1}, [2, 1, 3]);
         x = x / 1e3;
     end
