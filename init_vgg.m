@@ -8,7 +8,7 @@
 % 
 % mean_pix = [103.939, 116.779, 123.68]; 
 
-model_def_file = 'feature_net_v1.prototxt';
+model_def_file = 'feature_net_v2.prototxt';
 model_file = 'VGG_ILSVRC_16_layers.caffemodel';
 caffe('init', 'DNNL', model_def_file, model_file, 'test')
 caffe('set_mode_gpu');

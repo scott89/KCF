@@ -59,9 +59,9 @@ function [positions, time] = tracker(video_path, img_files, pos, target_sz, ...
     
 	output_sigma = sqrt(prod(target_sz)) * output_sigma_factor / cell_size;
     if isfield(features, 'deep') && features.deep
-%         yf = fft2(gaussian_shaped_labels(output_sigma, round((window_sz-0.1) / cell_size)));
-        sz = ceil(window_sz/cell_size)-1+4-4;
-        yf = fft2(gaussian_shaped_labels(output_sigma, sz));
+        yf = fft2(gaussian_shaped_labels(output_sigma, ceil(window_sz / cell_size)));
+%         sz = ceil(window_sz/cell_size)-1+4-4;
+%         yf = fft2(gaussian_shaped_labels(output_sigma, sz));
 
     else
         yf = fft2(gaussian_shaped_labels(output_sigma, floor(window_sz / cell_size)));

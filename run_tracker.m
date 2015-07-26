@@ -97,7 +97,7 @@ function [precision, fps] = run_tracker(video, kernel_type, feature_type, show_v
 		kernel.poly_b = 9;
 		
 		features.deep = true;
-		cell_size = 4;
+		cell_size = 8;
         init_vgg;
 		
 	otherwise
@@ -231,7 +231,7 @@ function [precision, fps] = run_tracker(video, kernel_type, feature_type, show_v
         if ~isdir(res_path)
             mkdir(res_path);
         end
-        save([res_path lower(video) '_kcf_' feature_type '.mat'], 'results');
+        save([res_path lower(video) '_kcf_' feature_type '8.mat'], 'results');
         
         
 		%calculate and show precision plot, as well as frames-per-second
